@@ -22,9 +22,10 @@ def get_rect(a, b):
     return pg.Rect(left, top, width, height)
 
 
-def print_rect(initial_position, final_position):
+def print_rect(initial_position, final_position, offset):
+    x, y = offset
     rect = get_rect(initial_position, final_position)
-    print('[{}, {}, {}, {}]'.format(rect.left, rect.top, rect.width, rect.height))
+    print('[{}, {}, {}, {}]'.format(rect.left - x, rect.top - y, rect.width, rect.height))
 
 
 def main():
@@ -45,10 +46,12 @@ def main():
     should_redraw = True
     initial_position = None
     current_position = None
+    offset_x = 0
+    offset_y = 0
     while True:
         if should_redraw:
             screen.fill((0, 0, 0))
-            screen.blit(image, pg.Rect(0, 0, image_width, image_height))
+            screen.blit(image, pg.Rect(offset_x, offset_y, image_width, image_height))
             if initial_position is not None:
                 rect = get_rect(current_position, initial_position)
                 pg.draw.rect(screen, (255, 255, 255), rect, 2)
@@ -64,12 +67,22 @@ def main():
             should_redraw = True
         elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             final_position = event.pos
-            print_rect(initial_position, final_position)
+            print_rect(initial_position, final_position, (offset_x, offset_y))
             break
         elif event.type == pg.MOUSEMOTION:
             if initial_position is not None:
                 current_position = event.pos
                 should_redraw = True
+        elif event.type == pg.KEYDOWN:
+            should_redraw = True
+            if event.key == pg.K_UP:
+                offset_y += 40
+            if event.key == pg.K_DOWN:
+                offset_y -= 40
+            if event.key == pg.K_LEFT:
+                offset_x += 40
+            if event.key == pg.K_RIGHT:
+                offset_x -= 40
 
 
 if __name__ == '__main__':
